@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const { User } = require('../models/user')
+
 
 router.get(`/`, (req, res) => {
     const users = {
@@ -60,8 +62,39 @@ router.get(`/`, (req, res) => {
 });
 
 router.post(`/`, (req, res) => {
-    res.send(req.body);
+    var new_user = new User(req.body);
 
+    new_user.save((err, results) => {
+        if (err) {
+            console.error(err);
+        }
+        else {
+            console.log(results);
+        }
+    });
+
+    res.send(new_user);
+
+});
+
+router.get(`/:id`, (req, res) => {
+    const mongoose = require('mongoose');
+    if (!mongoose.Types.ObjectId.isValid(req.params.id))
+        return res
+            .status(200)
+            .json({ status: false, message: "Id is not a valid object Id" });
+
+    const user = User.findById(req.params.id).then((data) => {
+        if (data) {
+            return res
+                .status(200)
+                .json({ status: true, message: "User was found", data: data });
+        } else {
+            return res
+                .status(200)
+                .json({ status: false, message: "User was NOT found" });
+        }
+    });
 });
 
 module.exports = router;
