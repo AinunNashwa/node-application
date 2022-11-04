@@ -8,6 +8,8 @@ const port = process.env.PORT;
 const api = process.env.API_URL;
 
 // Middleware
+app.use(cors());
+app.options('*',cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
